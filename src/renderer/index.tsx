@@ -5,4 +5,4 @@ const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 root.render(<App />);
 
-window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
+// window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
