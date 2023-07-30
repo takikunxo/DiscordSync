@@ -47,7 +47,7 @@ function getHitChannels(tasks: Task[], message: Message<boolean>): Task[] {
     }
 
     // ポジティブキーワードによる検索
-    const positiveKeywords = element.positive_keywords?.split(',');
+    const positiveKeywords = element.positive_keywords?.split('+');
     if (
       positiveKeywords &&
       positiveKeywords.length !== 0 &&
@@ -65,7 +65,7 @@ function getHitChannels(tasks: Task[], message: Message<boolean>): Task[] {
     }
 
     // ネガティブキーワードによる検索
-    const negativeKeywords = element.negative_keywords?.split(',');
+    const negativeKeywords = element.negative_keywords?.split('+');
     if (
       negativeKeywords &&
       negativeKeywords.length !== 0 &&
