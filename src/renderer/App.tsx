@@ -18,7 +18,7 @@ function Terminal() {
       <div />
     ) : (
       <>
-        <div className="profile other-profile">
+        <div className="profile">
           <img alt="logo" src={icon} width="30" height="30" />
           <span>{date.toLocaleString()}</span>
         </div>
