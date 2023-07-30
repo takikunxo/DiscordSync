@@ -78,6 +78,7 @@ const createWindow = async () => {
     show: false,
     autoHideMenuBar: true,
     icon: getAssetPath('icon.png'),
+    width: 530,
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
@@ -102,13 +103,11 @@ const createWindow = async () => {
       data = JSON.parse(fs.readFileSync('config.json', 'utf8'));
       await AuthValidate(data.key);
     } catch (error: any) {
-      if (mainWindow !== null) {
-        mainWindow.webContents.send(
-          'ipc-example',
-          "config.json doesn't exist or invalid key"
-        );
-        mainWindow.webContents.send('ipc-example', error.message);
-      }
+      mainWindow.webContents.send(
+        'ipc-example',
+        "config.json doesn't exist or invalid key"
+      );
+      mainWindow.webContents.send('ipc-example', error.message);
       return;
     }
 
@@ -134,7 +133,7 @@ const createWindow = async () => {
         }
       });
     } catch (error: any) {
-      if (mainWindow !== null) {
+      if (mainWindow) {
         mainWindow.webContents.send(
           'ipc-example',
           "tasks.csv doesn't exist or invalid format"
