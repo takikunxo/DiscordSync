@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { Client } from 'discord.js-selfbot-v13';
@@ -154,19 +154,32 @@ const createWindow = async () => {
     client
       .login(data.token)
       .then(() => {
-        console.log('login success');
+        if (mainWindow !== null) {
+          mainWindow.webContents.send('ipc-example', 'login success');
+        }
       })
       .catch((error) => {
-        console.log(error.message);
+        if (mainWindow !== null) {
+          mainWindow.webContents.send('ipc-example', 'login failed');
+          mainWindow.webContents.send('ipc-example', error.message);
+        }
       });
 
     client.on('ready', async () => {
-      // @ts-ignore
-      console.log(`${client.user.username} is ready to listen`);
+      if (mainWindow !== null) {
+        if (client.user !== null) {
+          mainWindow.webContents.send(
+            'ipc-example',
+            `${client.user.username} is ready to listen`
+          );
+        }
+      }
     });
 
     client.on('error', async (error) => {
-      console.log(error.message);
+      if (mainWindow !== null) {
+        mainWindow.webContents.send('ipc-example', error.message);
+      }
     });
 
     client.on('messageCreate', async (message) => {
@@ -221,4 +234,8 @@ app
       if (mainWindow === null) createWindow();
     });
   })
-  .catch(console.log);
+  .catch((error) => {
+    if (mainWindow !== null) {
+      mainWindow.webContents.send('ipc-example', error.message);
+    }
+  });
