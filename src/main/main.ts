@@ -85,78 +85,94 @@ const createWindow = async () => {
     },
   });
 
-  const tasks: Task[] = [];
-
+  let isAuthSuccess = false;
   let data: any;
   try {
     data = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-    await AuthValidate(data.key);
+    isAuthSuccess = await AuthValidate(data.key);
   } catch (error: any) {
     if (mainWindow !== null) {
+      mainWindow.webContents.send(
+        'ipc-example',
+        "config.json doesn't exist or invalid key"
+      );
       mainWindow.webContents.send('ipc-example', error.message);
     }
-    return;
   }
 
-  const db = fs.readFileSync('tasks.csv', 'utf8');
-  const records = parse(db);
-  console.log("csv's content:");
-  records.forEach((record: any) => {
-    if (record !== records[0]) {
-      const task: Task = {
-        monitor_channel: record[0],
-        destination_channel: record[1],
-        mention: record[2],
-        webhook_url: record[3],
-        webhook_user_name: record[4],
-        webhook_avatar_url: record[5],
-        positive_keywords_type: record[6],
-        positive_keywords: record[7],
-        negative_keywords_type: record[8],
-        negative_keywords: record[9],
-      };
-      tasks.push(task);
+  let isTasksLoadSuccess = false;
+  const tasks: Task[] = [];
+  try {
+    const db = fs.readFileSync('tasks.csv', 'utf8');
+    const records = parse(db);
+    records.forEach((record: any) => {
+      if (record !== records[0]) {
+        const task: Task = {
+          monitor_channel: record[0],
+          destination_channel: record[1],
+          mention: record[2],
+          webhook_url: record[3],
+          webhook_user_name: record[4],
+          webhook_avatar_url: record[5],
+          positive_keywords_type: record[6],
+          positive_keywords: record[7],
+          negative_keywords_type: record[8],
+          negative_keywords: record[9],
+        };
+        tasks.push(task);
+      }
+    });
+    isTasksLoadSuccess = true;
+  } catch (error: any) {
+    if (mainWindow !== null) {
+      mainWindow.webContents.send(
+        'ipc-example',
+        "tasks.csv doesn't exist or invalid format"
+      );
+      mainWindow.webContents.send('ipc-example', error.message);
     }
-  });
+  }
 
-  const client = new Client({
-    // See other options here
-    // https://discordjs-self-v13.netlify.app/#/docs/docs/main/typedef/ClientOptions
-    // All partials are loaded automatically
-    checkUpdate: false,
-  });
+  if (isAuthSuccess && isTasksLoadSuccess) {
+    const client = new Client({
+      // See other options here
+      // https://discordjs-self-v13.netlify.app/#/docs/docs/main/typedef/ClientOptions
+      // All partials are loaded automatically
+      checkUpdate: false,
+    });
 
-  client
-    .login(data.token)
-    .then(() => {
-      console.log('login success');
-    })
-    .catch((error) => {
+    client
+      .login(data.token)
+      .then(() => {
+        console.log('login success');
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+
+    client.on('ready', async () => {
+      // @ts-ignore
+      console.log(`${client.user.username} is ready to listen`);
+    });
+
+    client.on('error', async (error) => {
       console.log(error.message);
     });
 
-  client.on('ready', async () => {
-    // @ts-ignore
-    console.log(`${client.user.username} is ready to listen`);
-  });
+    client.on('messageCreate', async (message) => {
+      const hitChannels = getHitChannels(tasks, message);
 
-  client.on('error', async (error) => {
-    console.log(error.message);
-  });
+      if (hitChannels.length === 0) {
+        return;
+      }
 
-  client.on('messageCreate', async (message) => {
-    const hitChannels = getHitChannels(tasks, message);
+      sendWebhook(hitChannels, message);
 
-    if (hitChannels.length === 0) {
-      return;
-    }
-
-    sendWebhook(hitChannels, message);
-
-    if (mainWindow !== null) {
-      mainWindow.webContents.send('ipc-example', message.content);
-    }
-  });
+      if (mainWindow !== null) {
+        mainWindow.webContents.send('ipc-example', message.content);
+      }
+    });
+  }
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
