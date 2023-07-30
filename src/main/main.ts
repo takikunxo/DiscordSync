@@ -87,11 +87,14 @@ const createWindow = async () => {
 
   const tasks: Task[] = [];
 
-  const data = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-  const result = await AuthValidate(data.key);
-  if (!result) {
-    console.log('Invalid key');
-    app.quit();
+  let data: any;
+  try {
+    data = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+    await AuthValidate(data.key);
+  } catch (error: any) {
+    if (mainWindow !== null) {
+      mainWindow.webContents.send('ipc-example', error.message);
+    }
     return;
   }
 
