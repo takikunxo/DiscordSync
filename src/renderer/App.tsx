@@ -9,10 +9,9 @@ function Terminal() {
   window.electron.ipcRenderer.on('ipc-example', (arg) => {
     // eslint-disable-next-line no-console
     const date = new Date();
-    setMessages([...messages, `${date.toLocaleString()}：${arg}`]);
+    setMessages([...messages, `${date.toLocaleString()}\n${arg}\n`]);
   });
-
-  return <textarea disabled value={messages.join('\n')} />;
+  return <text>{messages.join('\n')}</text>;
 }
 
 export default function App() {
