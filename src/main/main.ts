@@ -231,6 +231,8 @@ const createWindow = async () => {
         if (message.content) {
           mainWindow.webContents.send('ipc-example', {
             content: message.content,
+            avatar_url: message.author.avatarURL(),
+            name: message.author.displayName,
           });
         }
       }
