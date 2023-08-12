@@ -1,6 +1,6 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import icon from '../../assets/icon.png';
 
 function Terminal() {
@@ -13,19 +13,26 @@ function Terminal() {
   });
   const date = new Date();
 
-  return messages.map((message, index) =>
-    index === 0 ? (
-      <div />
-    ) : (
-      <>
-        <div className="profile">
-          <img alt="logo" src={icon} width="30" height="30" />
-          <span>{date.toLocaleString()}</span>
-        </div>
-        <p>{message}</p>
-      </>
-    )
-  );
+  const messageElemtnts: React.JSX.Element[] = [];
+
+  // eslint-disable-next-line array-callback-return
+  messages.map((message, index) => {
+    if (index === 0) {
+      messageElemtnts.push(<div />);
+    } else {
+      messageElemtnts.push(
+        <>
+          <div className="profile">
+            <img alt="logo" src={icon} width="30" height="30" />
+            <span>{date.toLocaleString()}</span>
+          </div>
+          <p>{message}</p>
+        </>
+      );
+    }
+  });
+
+  return messageElemtnts;
 }
 
 export default function App() {
