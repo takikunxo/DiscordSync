@@ -1,5 +1,5 @@
 import { Message } from 'discord.js-selfbot-v13';
-import { WebhookClient } from 'discord.js';
+import { AttachmentBuilder, WebhookClient } from 'discord.js';
 import { Task } from './type';
 
 function judgeKeyword(
@@ -95,12 +95,23 @@ function sendWebhook(hitChannels: Task[], message: Message<boolean>) {
     if (element.mention) {
       content = `${content} **to** ${element.mention}`;
     }
+
+    const attachments: AttachmentBuilder[] = [];
+    message.attachments.forEach((attachment) => {
+      const atc = new AttachmentBuilder(attachment.attachment);
+      if (attachment.name) {
+        atc.setName(attachment.name);
+      }
+      attachments.push(atc);
+    });
+
     webhookClient
       .send({
         content,
         username: element.webhook_user_name,
         avatarURL: element.webhook_avatar_url,
         embeds: message.embeds,
+        files: attachments,
       })
       // TODO：エラー処理
       .catch((error) => console.log(error.message));
