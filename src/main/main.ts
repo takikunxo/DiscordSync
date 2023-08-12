@@ -111,11 +111,12 @@ const createWindow = async () => {
       data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
       await AuthValidate(data.key);
     } catch (error: any) {
-      mainWindow.webContents.send(
-        'ipc-example',
-        "config.json doesn't exist or invalid key"
-      );
-      mainWindow.webContents.send('ipc-example', error.message);
+      mainWindow.webContents.send('ipc-example', {
+        content: "config.json doesn't exist or invalid key",
+      });
+      mainWindow.webContents.send('ipc-example', {
+        content: error.message,
+      });
       return;
     }
 
@@ -149,11 +150,12 @@ const createWindow = async () => {
       });
     } catch (error: any) {
       if (mainWindow) {
-        mainWindow.webContents.send(
-          'ipc-example',
-          "tasks.csv doesn't exist or invalid format"
-        );
-        mainWindow.webContents.send('ipc-example', error.message);
+        mainWindow.webContents.send('ipc-example', {
+          content: "tasks.csv doesn't exist or invalid format",
+        });
+        mainWindow.webContents.send('ipc-example', {
+          content: error.message,
+        });
       }
       return;
     }
@@ -169,29 +171,33 @@ const createWindow = async () => {
       .login(data.token)
       .then(() => {
         if (mainWindow !== null) {
-          mainWindow.webContents.send('ipc-example', 'login success');
+          mainWindow.webContents.send('ipc-example', {
+            content: 'login success',
+          });
         }
       })
       .catch((error) => {
         if (mainWindow !== null) {
-          mainWindow.webContents.send('ipc-example', 'login failed');
-          mainWindow.webContents.send('ipc-example', error.message);
+          mainWindow.webContents.send('ipc-example', {
+            content: 'login failed',
+          });
+          mainWindow.webContents.send('ipc-example', {
+            content: error.message,
+          });
         }
       });
 
     client.on('ready', async () => {
       if (mainWindow !== null) {
         if (client.user !== null) {
-          mainWindow.webContents.send(
-            'ipc-example',
-            `${client.user.username} is ready to listen`
-          );
+          mainWindow.webContents.send('ipc-example', {
+            content: `${client.user.username} is ready to listen`,
+          });
 
           if (tasks.length === 0) {
-            mainWindow.webContents.send(
-              'ipc-example',
-              'no tasks found, please check tasks.csv'
-            );
+            mainWindow.webContents.send('ipc-example', {
+              content: 'no tasks found, please check tasks.csv',
+            });
           }
         }
       }
@@ -199,7 +205,9 @@ const createWindow = async () => {
 
     client.on('error', async (error) => {
       if (mainWindow !== null) {
-        mainWindow.webContents.send('ipc-example', error.message);
+        mainWindow.webContents.send('ipc-example', {
+          content: error.message,
+        });
       }
     });
 
@@ -213,13 +221,17 @@ const createWindow = async () => {
       const errorMessages = sendWebhook(hitChannels, message);
       errorMessages.forEach((errorMessage) => {
         if (mainWindow !== null) {
-          mainWindow.webContents.send('ipc-example', errorMessage);
+          mainWindow.webContents.send('ipc-example', {
+            content: errorMessage,
+          });
         }
       });
 
       if (mainWindow !== null) {
         if (message.content) {
-          mainWindow.webContents.send('ipc-example', message.content);
+          mainWindow.webContents.send('ipc-example', {
+            content: message.content,
+          });
         }
       }
     });
@@ -264,6 +276,8 @@ app
   })
   .catch((error) => {
     if (mainWindow !== null) {
-      mainWindow.webContents.send('ipc-example', error.message);
+      mainWindow.webContents.send('ipc-example', {
+        content: error.message,
+      });
     }
   });
