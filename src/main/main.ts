@@ -186,6 +186,13 @@ const createWindow = async () => {
             'ipc-example',
             `${client.user.username} is ready to listen`
           );
+
+          if (tasks.length === 0) {
+            mainWindow.webContents.send(
+              'ipc-example',
+              'no tasks found, please check tasks.csv'
+            );
+          }
         }
       }
     });
