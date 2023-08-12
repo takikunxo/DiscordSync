@@ -203,7 +203,12 @@ const createWindow = async () => {
         return;
       }
 
-      sendWebhook(hitChannels, message);
+      const errorMessages = sendWebhook(hitChannels, message);
+      errorMessages.forEach((errorMessage) => {
+        if (mainWindow !== null) {
+          mainWindow.webContents.send('ipc-example', errorMessage);
+        }
+      });
 
       if (mainWindow !== null) {
         mainWindow.webContents.send('ipc-example', message.content);

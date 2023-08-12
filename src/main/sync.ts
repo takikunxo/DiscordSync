@@ -84,7 +84,8 @@ function getHitChannels(tasks: Task[], message: Message<boolean>): Task[] {
   });
 }
 
-function sendWebhook(hitChannels: Task[], message: Message<boolean>) {
+function sendWebhook(hitChannels: Task[], message: Message<boolean>): string[] {
+  const errorMessages: string[] = [];
   hitChannels.forEach((element) => {
     const webhookClient = new WebhookClient({
       url: element.webhook_url,
@@ -113,9 +114,12 @@ function sendWebhook(hitChannels: Task[], message: Message<boolean>) {
         embeds: message.embeds,
         files: attachments,
       })
-      // TODO：エラー処理
-      .catch((error) => console.log(error.message));
+      .catch((error) => {
+        errorMessages.push(error.message);
+      });
   });
+
+  return errorMessages;
 }
 
 export { getHitChannels, sendWebhook };
