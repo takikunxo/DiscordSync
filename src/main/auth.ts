@@ -30,7 +30,7 @@ export default async function AuthValidate(isAvkey: string): Promise<boolean> {
   const macAddressArray = getMacAddrArray();
   const isPcid = macAddressArray[0].toUpperCase().replace(/:/g, '');
   const isComputerName = os.hostname();
-  const url = `https://qlm2.net/automata/qlmlicenseserver/qlmservice.asmx/ValidateLicenseHttp?is_avkey=${isAvkey}&is_pcid=${isPcid}&is_computer_name=${isComputerName}\`;`;
+  const url = `https://qlm2.net/automata/qlmlicenseserver/qlmservice.asmx/ValidateLicenseHttp?is_avkey=${isAvkey}&is_pcid=${isPcid}&is_computer_name=${isComputerName}&is_qlmversion=12`;
 
   try {
     const response = await axios.get(url);
