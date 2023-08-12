@@ -134,11 +134,11 @@ const createWindow = async () => {
         if (record !== records[0]) {
           const task: Task = {
             monitor_channel: record[0],
-            destination_channel: record[1],
-            mention: record[2],
-            webhook_url: record[3],
-            webhook_user_name: record[4],
-            webhook_avatar_url: record[5],
+            webhook_url: record[1],
+            webhook_mention: record[2],
+            webhook_user_name: record[3],
+            webhook_avatar_url: record[4],
+            webhook_reference_enabled: record[5],
             positive_keywords_type: record[6],
             positive_keywords: record[7],
             negative_keywords_type: record[8],

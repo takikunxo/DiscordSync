@@ -92,9 +92,11 @@ function sendWebhook(hitChannels: Task[], message: Message<boolean>): string[] {
     });
 
     let { content } = message;
-    content = `${content}\r\n\r\n**sent from ${message.author.username} in** ${message.url}`;
-    if (element.mention) {
-      content = `${content} **to** ${element.mention}`;
+    if (element.webhook_mention) {
+      content = `${element.webhook_mention}\r\n${content}`;
+    }
+    if (element.webhook_reference_enabled === 'true') {
+      content = `${content}\r\n\r\n(${message.url})`;
     }
 
     const attachments: AttachmentBuilder[] = [];
@@ -110,7 +112,7 @@ function sendWebhook(hitChannels: Task[], message: Message<boolean>): string[] {
     if (element.webhook_user_name) {
       username = element.webhook_user_name;
     } else {
-      username = message.author.username;
+      username = message.author.displayName;
     }
 
     let avatarURL: string;
@@ -120,20 +122,34 @@ function sendWebhook(hitChannels: Task[], message: Message<boolean>): string[] {
       // @ts-ignore
       avatarURL = message.author.avatarURL();
     } else {
-      avatarURL = ' ';
+      avatarURL = '';
     }
 
-    webhookClient
-      .send({
-        content,
-        username: element.webhook_user_name,
-        avatarURL: element.webhook_avatar_url,
-        embeds: message.embeds,
-        files: attachments,
-      })
-      .catch((error) => {
-        errorMessages.push(error.message);
-      });
+    if (avatarURL === '') {
+      webhookClient
+        .send({
+          content,
+          username,
+          // avatarURL,
+          embeds: message.embeds,
+          files: attachments,
+        })
+        .catch((error) => {
+          errorMessages.push(error.message);
+        });
+    } else {
+      webhookClient
+        .send({
+          content,
+          username,
+          avatarURL,
+          embeds: message.embeds,
+          files: attachments,
+        })
+        .catch((error) => {
+          errorMessages.push(error.message);
+        });
+    }
   });
 
   return errorMessages;
