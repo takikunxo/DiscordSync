@@ -99,9 +99,16 @@ const createWindow = async () => {
       mainWindow.show();
     }
 
+    let configPath: string;
+    if (isDebug) {
+      configPath = 'config.json';
+    } else {
+      configPath = path.join(process.resourcesPath, 'resources', 'config.json');
+    }
+
     let data: any;
     try {
-      data = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+      data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
       await AuthValidate(data.key);
     } catch (error: any) {
       mainWindow.webContents.send(
@@ -112,9 +119,16 @@ const createWindow = async () => {
       return;
     }
 
+    let tasksPath: string;
+    if (isDebug) {
+      tasksPath = 'tasks.csv';
+    } else {
+      tasksPath = path.join(process.resourcesPath, 'resources', 'tasks.csv');
+    }
+
     const tasks: Task[] = [];
     try {
-      const db = fs.readFileSync('tasks.csv', 'utf8');
+      const db = fs.readFileSync(tasksPath, 'utf8');
       const records = parse(db);
       records.forEach((record: any) => {
         if (record !== records[0]) {
