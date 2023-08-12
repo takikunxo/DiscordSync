@@ -106,6 +106,23 @@ function sendWebhook(hitChannels: Task[], message: Message<boolean>): string[] {
       attachments.push(atc);
     });
 
+    let username: string;
+    if (element.webhook_user_name) {
+      username = element.webhook_user_name;
+    } else {
+      username = message.author.username;
+    }
+
+    let avatarURL: string;
+    if (element.webhook_avatar_url) {
+      avatarURL = element.webhook_avatar_url;
+    } else if (message.author.avatarURL()) {
+      // @ts-ignore
+      avatarURL = message.author.avatarURL();
+    } else {
+      avatarURL = ' ';
+    }
+
     webhookClient
       .send({
         content,
