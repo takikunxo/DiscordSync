@@ -49,15 +49,37 @@ function getHitChannels(tasks: Task[], message: Message<boolean>): Task[] {
       positiveKeywords.length !== 0 &&
       positiveKeywords[0]
     ) {
+      if (!message.content) {
+        return false;
+      }
+
       if (
-        !message.content ||
         !judgeKeyword(
           message.content,
           positiveKeywords,
           element.positive_keywords_type
         )
       ) {
-        return false;
+        const embedsList = message.embeds;
+        if (embedsList.length === 0) {
+          return false;
+        }
+
+        let result = false;
+        embedsList.forEach((embed) => {
+          if (
+            judgeKeyword(
+              JSON.stringify(embed),
+              positiveKeywords,
+              element.positive_keywords_type
+            )
+          ) {
+            result = true;
+          }
+        });
+        if (!result) {
+          return false;
+        }
       }
     }
 
@@ -68,15 +90,37 @@ function getHitChannels(tasks: Task[], message: Message<boolean>): Task[] {
       negativeKeywords.length !== 0 &&
       negativeKeywords[0]
     ) {
+      if (!message.content) {
+        return false;
+      }
+
       if (
-        !message.content ||
         judgeKeyword(
           message.content,
           negativeKeywords,
           element.negative_keywords_type
         )
       ) {
-        return false;
+        const embedsList = message.embeds;
+        if (embedsList.length === 0) {
+          return false;
+        }
+
+        let result = false;
+        embedsList.forEach((embed) => {
+          if (
+            judgeKeyword(
+              JSON.stringify(embed),
+              negativeKeywords,
+              element.positive_keywords_type
+            )
+          ) {
+            result = true;
+          }
+        });
+        if (result) {
+          return false;
+        }
       }
     }
 
