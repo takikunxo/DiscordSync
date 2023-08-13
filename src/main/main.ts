@@ -229,8 +229,24 @@ const createWindow = async () => {
 
       if (mainWindow !== null) {
         if (message.content) {
+          let cnt = message.content;
+          if (message.attachments.size > 0) {
+            message.attachments.forEach((attachment) => {
+              cnt += `\n[${attachment.url}]`;
+            });
+          }
           mainWindow.webContents.send('ipc-example', {
-            content: message.content,
+            content: cnt,
+            avatar_url: message.author.avatarURL(),
+            name: message.author.displayName,
+          });
+        } else if (message.attachments.size > 0) {
+          let cnt = '';
+          message.attachments.forEach((attachment) => {
+            cnt += `\n[${attachment.url}]`;
+          });
+          mainWindow.webContents.send('ipc-example', {
+            content: cnt,
             avatar_url: message.author.avatarURL(),
             name: message.author.displayName,
           });
