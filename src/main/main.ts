@@ -246,7 +246,7 @@ const createWindow = async () => {
         } else if (message.attachments.size > 0) {
           let cnt = '';
           message.attachments.forEach((attachment) => {
-            cnt += `\n[${attachment.url}]`;
+            cnt += `${attachment.url}\n`;
           });
           mainWindow.webContents.send('ipc-example', {
             content: cnt,
