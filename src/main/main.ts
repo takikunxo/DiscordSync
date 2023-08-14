@@ -10,8 +10,8 @@
  */
 import path from 'path';
 import { app, BrowserWindow, shell } from 'electron';
-// import { autoUpdater } from 'electron-updater';
-// import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
+import log from 'electron-log';
 import { Client } from 'discord.js-selfbot-v13';
 import * as fs from 'fs';
 import { parse } from 'csv-parse/sync';
@@ -20,13 +20,13 @@ import { Task } from './type';
 import AuthValidate from './auth';
 import { getHitChannels, sendWebhook } from './sync';
 
-// class AppUpdater {
-//   constructor() {
-//     log.transports.file.level = 'info';
-//     autoUpdater.logger = log;
-//     autoUpdater.checkForUpdatesAndNotify();
-//   }
-// }
+class AppUpdater {
+  constructor() {
+    log.transports.file.level = 'info';
+    autoUpdater.logger = log;
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+}
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -276,7 +276,7 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  // new AppUpdater();
+  new AppUpdater();
 };
 
 /**

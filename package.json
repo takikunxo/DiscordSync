@@ -240,8 +240,6 @@
       "provider": "s3",
       "bucket": "soraco.update",
       "region": "ap-northeast-1",
-      "acl":"public-read",
-      "storageClass": "STANDARD",
       "path": "/discordsync/"
     }
   },
