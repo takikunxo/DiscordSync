@@ -242,9 +242,8 @@
     ],
     "publish": {
       "provider": "s3",
-      "bucket": "soraco.update",
-      "region": "ap-northeast-1",
-      "path": "/discordsync/"
+      "bucket": "soraco.update.discordsync",
+      "region": "ap-northeast-1"
     }
   },
   "collective": {
